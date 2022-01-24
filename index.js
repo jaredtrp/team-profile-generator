@@ -2,44 +2,19 @@ const fs = require('fs');
 const inquirer = require('inquirer');
 const fileWriter = require('./src/fileWrite');
 const pageGenerator = require('./src/page-template');
-const Engineer = require('.lib/Engineer');
-const Intern = require('.lib/Intern');
-const Manager = require('.lib/');
-const { createPublicKey } = require('crypto');
-
-// USER STORY
-// AS A manager
-// I WANT to generate a webpage that displays my team's basic info
-// SO THAT I have quick access to their emails and GitHub profiles
-
-// ACCEPTANCE CRITERIA
-// GIVEN a command-line application that accepts user input
-// WHEN I am prompted for my team members and their information
-// THEN an HTML file is generated that displays a nicely formatted team roster based on user input
-// WHEN I click on an email address in the HTML
-// THEN my default email program opens and populates the TO field of the email with the address
-// WHEN I click on the GitHub username
-// THEN that GitHub profile opens in a new tab
-// WHEN I start the application
-// THEN I am prompted to enter the team manager’s name, employee ID, email address, and office number
-// WHEN I enter the team manager’s name, employee ID, email address, and office number
-// THEN I am presented with a menu with the option to add an engineer or an intern or to finish building my team
-// WHEN I select the engineer option
-// THEN I am prompted to enter the engineer’s name, ID, email, and GitHub username, and I am taken back to the menu
-// WHEN I select the intern option
-// THEN I am prompted to enter the intern’s name, ID, email, and school, and I am taken back to the menu
-// WHEN I decide to finish building my team
-// THEN I exit the application, and the HTML is generated
+const Engineer = require('./lib/Engineer');
+const Intern = require('./lib/Intern');
+const Manager = require('./lib/Manager');
 
 // Prompt the user for the manager data
-const initManager = () => {
-  console.log('Please build your team');
+const promptManager = () => {
+  console.log('Welcome to the Team Roster Builder');
   return inquirer
     .prompt([
       {
         type: 'input',
         name: 'name',
-        message: `What is the team manager's name?`,
+        message: "What is the team manager's name?",
         validate: name => {
           if (name) {
             return true;
@@ -50,9 +25,9 @@ const initManager = () => {
         },
       },
       {
-        type: 'number',
+        type: 'input',
         name: 'id',
-        message: `What is the team manager's id number?`,
+        message: "What is the team manager's id number?",
         validate: id => {
           if (id) {
             return true;
@@ -65,12 +40,12 @@ const initManager = () => {
       {
         type: 'input',
         name: 'email',
-        message: `What is the team manager's email address?`,
+        message: "What is the team manager's email address?",
         validate: email => {
           if (email) {
             return true;
           } else {
-            console.log(`Please enter an email address.`);
+            console.log('Please enter an email address.');
             return false;
           }
         },
@@ -78,12 +53,12 @@ const initManager = () => {
       {
         type: 'input',
         name: 'officeNum',
-        message: `What is the team manager's office number?`,
+        message: "What is the team manager's office number?",
         validate: officeNum => {
           if (officeNum) {
             return true;
           } else {
-            console.log(`Please enter an office number.`);
+            console.log('Please enter an office number.');
             return false;
           }
         },
@@ -91,20 +66,21 @@ const initManager = () => {
     ])
     .then(managerData => {
       // creates the index.html page
-      const topPage = generatePage.generateTop();
-      fileWriting.writeFile(topPage);
+      const hero = pageGenerator.generateHero();
+      fileWriting.writeFile(hero);
 
       // creates the manager object with the info given
-      const { name, id, email, officeNum } = managerInfo;
+      const { name, id, email, officeNum } = managerData;
       const manager = new Manager(name, id, email, officeNum);
 
       // creates the manager card and append it to the html page
-      const managerData = generatePage.addManager(manager);
-      fileWriting.appendFile(managerData);
+      const managerCard = pageGenerator.addManager(manager);
+      fileWriting.appendFile(managerCard);
     });
 };
 
 const addEmployees = () => {
+  console.log('Add a new team member');
   return inquirer
     .prompt([
       {
@@ -116,25 +92,25 @@ const addEmployees = () => {
       {
         type: 'input',
         name: 'name',
-        message: `What is the team member's name?`,
+        message: "What is the team member's name?",
         validate: name => {
           if (name) {
             return true;
           } else {
-            console.log(`Please enter a name.`);
+            console.log('Please enter a name.');
             return false;
           }
         },
       },
       {
-        type: 'number',
+        type: 'input',
         name: 'id',
-        message: `What is the team manager's id number?`,
+        message: "What is the team manager's id number?",
         validate: id => {
           if (id) {
             return true;
           } else {
-            console.log(`Please enter an id.`);
+            console.log('Please enter an id.');
             return false;
           }
         },
@@ -142,12 +118,12 @@ const addEmployees = () => {
       {
         type: 'input',
         name: 'email',
-        message: `What is the team member's email address?`,
+        message: "What is the team member's email address?",
         validate: email => {
           if (email) {
             return true;
           } else {
-            console.log(`Please enter an email address.`);
+            console.log('Please enter an email address.');
             return false;
           }
         },
@@ -191,27 +167,29 @@ const addEmployees = () => {
       let { role, name, id, email, github, school, confirmAddEmployees } =
         employeeInfo;
 
-      // if the team member is an engineer, it'll add the card HTML for an engineer
+      // if the team member is an engineer, add the HTML for an engineer card
       if (role === 'Engineer') {
         let engineer = new Engineer(name, id, email, github);
-        let engineerHTML = generatePage.addEngineer(engineer);
-        fileWriting.appendFile(engineerHTML);
+        let engineerCard = pageGenerator.addEngineer(engineer);
+        fileWriting.appendFile(engineerCard);
 
-        // if the team member is an intern, it'll add the card HTML for an intern
+        // if the team member is an intern, add the HTML for an intern card
       } else if (role === 'Intern') {
         let intern = new Intern(name, id, email, school);
-        let internHTML = generatePage.addIntern(intern);
-        fileWriting.appendFile(internHTML);
+        let internCard = pageGenerator.addIntern(intern);
+        fileWriting.appendFile(internCard);
       }
 
       // if the user wants to add another team member, prompt is called once more
       if (confirmAddEmployees) {
         addEmployees();
+      } else {
+        console.log('Thank you for using the Team Roster Builder.');
       }
     });
 };
 
-initManager()
+promptManager()
   .then(addEmployees)
-  .then(fileWriting.appendFile(generatePage.generateBottom()))
-  .then(fileWriting.copyFile());
+  .then(fileWriter.appendFile(pageGenerator.generateBottom()))
+  .then(fileWriter.copyFile());
