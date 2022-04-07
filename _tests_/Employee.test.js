@@ -1,34 +1,34 @@
 const Employee = require('../lib/Employee');
 
-test('creates an employee object', () => {
-  const employee = new Employee('Jim', '09', 'andrew.derek.wales@gmail.com');
+test('Generates an employee object', () => {
+  const employee = new Employee('Jane', 'password', 'jane.doe@gmail.com');
   const employeeId = employee.id;
   const eMail = employee.email;
 
-  expect(employee.name).toBe('Jim');
+  expect(employee.name).toBe('Jane');
   expect(employee.id).toBe(employeeId);
   expect(employee.email).toBe(eMail);
 });
 
-test('Creates a name for the employee via the getName()', () => {
-  const testName = 'Jim';
+test('Generates a name for the employee via getName()', () => {
+  const testName = 'Jane';
   const employee = new Employee(testName);
   expect(employee.name).toBe(testName);
 });
 
-test('creates an id for the employee', () => {
-  const testValue = 99;
-  const employee = new Employee('Jim', testValue);
+test('Generates an id for the employee', () => {
+  const testValue = 01;
+  const employee = new Employee('Jane', testValue);
   expect(employee.id).toBe(testValue);
 });
 
-test('Creates an email for the employee via getEmail()', () => {
-  const testEmail = 'andrew.derek.wales@gmail.com';
-  const employee = new Employee('Jim', 'id', testEmail);
+test('Generates an email for the employee via getEmail()', () => {
+  const testEmail = 'jane.doe@gmail.com';
+  const employee = new Employee('Jane', 'id', testEmail);
   expect(employee.email).toBe(testEmail);
 });
 
-test('Makes sure getRole() returns Employee', () => {
+test('Confirms getRole() returns Employee', () => {
   const testRole = 'Employee';
   const employee = new Employee();
   expect(employee.getRole()).toBe(testRole);
